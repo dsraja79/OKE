@@ -1,2 +1,0 @@
-# OKE
-OKE projects
