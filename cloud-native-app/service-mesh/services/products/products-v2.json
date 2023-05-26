@@ -1,0 +1,8 @@
+[
+    { "id": "1100","name": "PRDV2-01", "version":"v2", "price": "350", "description": "Product 1-1" },
+    { "id": "1200","name": "PRDV2-02", "version":"v2", "price": "150", "description": "Product 2-1" },
+    { "id": "1300","name": "PRDV2-03", "version":"v2", "price": "150", "description": "Product 3-1" },
+    { "id": "1400","name": "PRDV2-04", "version":"v2", "price": "850", "description": "Product 4-1" },
+    { "id": "1500","name": "PRDV2-05", "version":"v2", "price": "650", "description": "Product 5-1" }
+   
+]

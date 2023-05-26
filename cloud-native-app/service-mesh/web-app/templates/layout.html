@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='site.css') }}"  />
+    </head>
+
+    <body>
+        <div class="navbar">
+            <a href="{{ url_for('home') }}" class="navbar-brand">Home</a>
+            <a href="{{ url_for('create_order') }}" class="navbar-item">Create Order</a>
+            <a href="{{ url_for('get_orders') }}" class="navbar-item">List Orders</a>
+            <a href="{{ url_for('inventory') }}" class="navbar-item">Inventory</a>
+            <a href="{{ url_for('about') }}" class="navbar-item">About</a>
+            <a href="{{ url_for('reference') }}" class="navbar-item">Reference</a>
+        </div>
+
+        <div class="body-content">
+            {% block content %}
+            {% endblock %}
+            <hr/>
+            <footer>
+                <b>OCI - Service Mesh in action!</b>
+            </footer>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-image
+  namespace: ocilabs
+spec:
+  containers:
+    - name: ngnix
+      image: yyz.ocir.io/yzue3g9pdvi8/ocilabs/ngnix-lb:latest
+      imagePullPolicy: Always
+      ports:
+      - name: nginx
+        containerPort: 8080
+        protocol: TCP
+  imagePullSecrets:
+    - name: ocirsecret

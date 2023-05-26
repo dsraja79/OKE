@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-app1
+  labels:
+    app: nginx-app1
+spec:
+  selector:
+    matchLabels:
+      app: nginx-app1
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-app1
+    spec:
+      containers:
+      - name: ngnix
+        image: yyz.ocir.io/yzue3g9pdvi8/ocilabs/ngnix-lb:latest
+        imagePullPolicy: Always
+        ports:
+        - name: nginx
+          containerPort: 8080
+          protocol: TCP
+      imagePullSecrets:
+      - name: ocirsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc1
+spec:
+  selector:
+    app: nginx-app1
+  ports:
+    - port: 8080
+      targetPort: 80
+  type: NodePort

@@ -1,0 +1,127 @@
+# Manifest for Inventory Deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.service: inventory-app
+  name: inventory-app
+  namespace: apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.service: inventory-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.network/svc-network: "true"
+        app.service: inventory-app
+    spec:
+      containers:
+        - args:
+            - npm
+            - start
+          image: "iad.ocir.io/orasenatdoracledigital01/ocilabs/inventory-app:0.0.1"
+          imagePullPolicy: Always
+          name: inventory-app
+          ports:
+            - containerPort: 3000        
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/app
+              name: app-claim1
+      imagePullSecrets:
+        - name: ocirsecret
+      restartPolicy: Always
+      volumes:
+        - name: app-claim1
+          persistentVolumeClaim:
+            claimName: app-claim1
+---
+
+# Manifest for inventory service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.service: inventory-app
+  name: inventory-app-svc
+  namespace: apps
+spec:
+  type: NodePort
+  ports:
+    - name: "3006"
+      port: 3006
+      targetPort: 3000
+  selector:
+    app.service: inventory-app
+
+---
+
+# Manifest for Mongo deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.service: mongo-inventory
+  name: mongo-inventory
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.service: mongo-inventory
+  template:
+    metadata:
+      labels:
+        app.network/svc-network: "true"
+        app.service: mongo-inventory
+    spec:
+      containers:
+        - env:
+            - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+              value: root
+            - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+              value: root
+          image: mongo:4.4.14
+          name: mongo-node
+          ports:
+            - containerPort: 8081
+          resources: {}
+      restartPolicy: Always
+---
+# Manifest for Mongo service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.service: mongo-inventory
+  name: mongo-inventory-svc
+  namespace: apps
+spec:
+  ports:
+    - name: "8081"
+      port: 8081
+      targetPort: 27017
+  selector:
+    app.service: mongo-inventory
+
+---
+# Manifest for persistent volume claim
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.service: app-claim1
+  name: app-claim1
+  namespace: apps
+spec:
+  storageClassName: "oci-bv"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

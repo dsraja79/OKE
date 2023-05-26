@@ -1,0 +1,193 @@
+# Manifest for products Deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: products
+    version: v1    
+  name: products-v1-app
+  namespace: apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: products
+      version: v1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.network/svc-network: "true"        
+        app: products
+        version: v1
+    spec:
+      containers:      
+      - name: products-v1-app      
+        image: "iad.ocir.io/orasenatdoracledigital01/ocilabs/products-svc:0.0.1"
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES_HOST
+          value: products-postgres-service
+        - name: VERSION
+          value: v1
+        - name: PRODUCTS_FILE
+          value: products-v1.json
+        ports:
+        - containerPort: 5000                 
+      imagePullSecrets:
+        - name: ocirsecret
+      restartPolicy: Always      
+---
+
+# Manifest for products service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: products
+    version: v1
+  name: products-v1-app-svc
+  namespace: apps
+spec:
+  type: NodePort
+  ports:
+    - name: "3006"
+      port: 3006
+      targetPort: 5000
+  selector:
+      app: products
+      version: v1
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+      app: products
+      version: v2
+  name: products-v2-app
+  namespace: apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: products
+      version: v2
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.network/svc-network: "true"
+        app: products
+        version: v2
+    spec:
+      containers:
+      - name: products-v2-app      
+        image: "iad.ocir.io/orasenatdoracledigital01/ocilabs/products-svc:0.0.2"
+        imagePullPolicy: Always
+        env:
+        - name: POSTGRES_HOST
+          value: products-postgres-service
+        - name: VERSION
+          value: v2
+        - name: PRODUCTS_FILE
+          value: products-v2.json
+        ports:
+        - containerPort: 5000         
+      imagePullSecrets:
+        - name: ocirsecret
+      restartPolicy: Always      
+---
+
+# Manifest for products service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: products
+    version: v2
+  name: products-v2-app-svc
+  namespace: apps
+spec:
+  type: NodePort
+  ports:
+    - name: "3006"
+      port: 3006
+      targetPort: 5000
+  selector:
+    app: products
+    version: v2
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-db
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products-db
+  template:
+    metadata:
+      labels:
+        app: products-db
+    spec:
+      containers:
+      - name: products-db
+        image: postgres:13.4
+        env:
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_PASSWORD
+            value: password
+          - name: POSTGRES_DB
+            value: products
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+        - name: postgres-storage          
+          mountPath: /var/lib/postgresql/data
+          subPath: pgdata
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: products-postgres-pvc
+
+---
+#Manifest for Products - postgres db service
+apiVersion: v1
+kind: Service
+metadata:
+  name: products-postgres-service
+  namespace: apps
+spec:
+  selector:
+    app: products-db
+  ports:
+    - name: "5432"
+      port: 5432
+      targetPort: 5432
+
+---
+# Manifest for persistent volume claim
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.service: products-postgres-pvc
+  name: products-postgres-pvc
+  namespace: apps
+spec:
+  storageClassName: "oci-bv"  
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

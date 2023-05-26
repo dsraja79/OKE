@@ -1,0 +1,34 @@
+version: "3"
+services:
+  postgres-db:
+    image: postgres:13
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: products
+    ports:
+      - "5432:5432"
+    networks:
+      - svc_network
+
+  products-app:
+    build: .
+    container_name: products-app    
+    ports:
+      - 5000:5000
+    depends_on:
+      - postgres-db
+    environment:
+      - POSTGRES_HOST=postgres-db
+      - VERSION=v1
+      - PRODUCTS_FILE=products-v1.json
+    networks:
+      - svc_network
+    entrypoint: ["./wait-for-it.sh", "postgres-db:5432", "--", "python", "app.py"]
+
+
+networks:
+  svc_network:    
+    external: true

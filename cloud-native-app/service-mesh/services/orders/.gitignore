@@ -1,0 +1,25 @@
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Build output
+build/
+dist/
+
+# Testing
+coverage/
+
+# Editor-specific files
+.idea/
+.vscode/
+*.swp
+
+# Miscellaneous
+.DS_Store
+Thumbs.db

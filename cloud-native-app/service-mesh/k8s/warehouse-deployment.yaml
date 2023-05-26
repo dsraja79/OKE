@@ -1,0 +1,150 @@
+# Manifest for warehouse Deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.service: warehouse-app
+  name: warehouse-app
+  namespace: apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.service: warehouse-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.network/svc-network: "true"
+        app.service: warehouse-app
+    spec:
+      containers:
+      - name: warehouse-app
+        image: "iad.ocir.io/orasenatdoracledigital01/ocilabs/warehouse-app:0.0.1"
+        env:
+          - name: DB_HOST
+            value: warehouse-db-svc
+          - name: DB_NAME
+            value: warehouse_db
+          - name: DB_USER
+            value: root
+          - name: DB_PASSWORD
+            value: password
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000         
+      imagePullSecrets:
+        - name: ocirsecret
+      restartPolicy: Always      
+---
+
+# Manifest for warehouse service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.service: warehouse-app
+  name: warehouse-app-svc
+  namespace: apps
+spec:
+  type: NodePort
+  ports:
+    - name: "3007"
+      port: 3007
+      targetPort: 3000
+  selector:
+    app.service: warehouse-app
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: warehousedb-deployment
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: warehousedb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: warehousedb
+    spec:
+      containers:
+        - name: warehousedb
+          image: mysql:5.6          
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: warehousedb-secret
+                  key: mysql-root-password
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: warehousedb-configmap
+                  key: MYSQL_DATABASE
+          volumeMounts:
+            - name: warehousedb-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: warehousedb-data
+          persistentVolumeClaim:
+            claimName: warehousedb-pvc
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: warehousedb-configmap
+  namespace: apps
+data:
+  MYSQL_DATABASE: warehouse_db
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: warehousedb-secret
+  namespace: apps
+type: Opaque
+data:
+  mysql-root-password: cGFzc3dvcmQ=
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: warehouse-db-svc
+  namespace: apps
+spec:
+  selector:
+    app: warehousedb
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.service: warehousedb-pvc
+  name: warehousedb-pvc
+  namespace: apps
+spec:
+  storageClassName: "oci-bv"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

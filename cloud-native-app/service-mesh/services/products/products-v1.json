@@ -1,0 +1,12 @@
+[
+    { "id": "100","name": "PRD-01", "version":"v1", "price": "1350", "description": "Product 1" },
+    { "id": "200","name": "PRD-02", "version":"v1", "price": "7150", "description": "Product 2" },
+    { "id": "300","name": "PRD-03", "version":"v1", "price": "9150", "description": "Product 3" },
+    { "id": "400","name": "PRD-04", "version":"v1", "price": "7850", "description": "Product 4" },
+    { "id": "500","name": "PRD-05", "version":"v1", "price": "6650", "description": "Product 5" },
+    { "id": "600","name": "PRD-06", "version":"v1", "price": "8850", "description": "Product 6" },
+    { "id": "700","name": "PRD-07", "version":"v1", "price": "3350", "description": "Product 7" },
+    { "id": "800","name": "PRD-08", "version":"v1", "price": "2250", "description": "Product 8" },
+    { "id": "900","name": "PRD-09", "version":"v1", "price": "4550", "description": "Product 9" },
+    { "id": "1000","name": "PRD-10","version":"v1",  "price": "2350", "description": "Product 10" } 
+]

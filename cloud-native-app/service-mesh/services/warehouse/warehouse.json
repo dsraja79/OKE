@@ -1,0 +1,19 @@
+[
+    { "id":"100", "product": "PRD-01", "warehouse": "WH011", "location": "CA" },
+    { "id":"200","product": "PRD-02", "warehouse": "WH002", "location": "NJ"},
+    { "id":"300","product": "PRD-03", "warehouse": "WH003", "location": "WA"},
+    { "id":"400","product": "PRD-04", "warehouse": "WH051", "location": "MI"},
+    { "id":"500","product": "PRD-05", "warehouse": "WH074", "location": "NH" },
+    { "id":"600","product": "PRD-06", "warehouse": "WH081", "location": "MO"},
+    { "id":"700","product": "PRD-07", "warehouse": "WH031", "location": "RI"},
+    { "id":"800","product": "PRD-08", "warehouse": "WH871", "location": "OH"},
+    { "id":"900","product": "PRD-09", "warehouse": "WH901", "location": "CO" },
+    { "id":"1000","product": "PRD-10", "warehouse": "WH101", "location": "WI" },
+    { "id":"1100","product": "PRD-11", "warehouse": "WH301", "location": "IL" },
+    { "id":"2200","product": "PRD-12", "warehouse": "WH601", "location": "GA"},
+    { "id":"2300","product": "PRDV2-01", "warehouse": "WH871", "location": "OH"},
+    { "id":"2400","product": "PRDV2-02", "warehouse": "WH901", "location": "CO" },
+    { "id":"2500","product": "PRDV2-03", "warehouse": "WH101", "location": "WI" },
+    { "id":"2600","product": "PRDV2-04", "warehouse": "WH301", "location": "IL" },
+    { "id":"2700","product": "PRDV2-05", "warehouse": "WH601", "location": "GA"}
+]

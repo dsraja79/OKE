@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+  namespace: apps
+spec:
+  selector:
+    matchLabels:
+      type: web-ui
+      version: one
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        type: web-ui
+        version: one
+        buidnumber: b1001
+    spec:
+      containers:
+      - name: web-app-1
+        image: "iad.ocir.io/orasenatdoracledigital01/ocilabs/cn-web-app1:0.0.1"
+        imagePullPolicy: Always        
+        ports:
+        - name: web-app
+          containerPort: 5000
+          protocol: TCP 
+      imagePullSecrets:
+        - name: ocirsecret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-1
+  namespace: apps
+spec:
+  type: NodePort
+  selector:
+    type: web-ui
+    version: one
+  ports:
+  - protocol: TCP
+    port: 60000
+    targetPort: 5000

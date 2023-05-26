@@ -1,0 +1,142 @@
+# Manifest for orders Deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.service: app
+  name: order-app
+  namespace: apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.service: app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.network/svc-network: "true"
+        app.service: app
+    spec:
+      containers:
+        - args:
+            - npm
+            - start
+          image: "iad.ocir.io/orasenatdoracledigital01/ocilabs/orders-app:0.0.1"
+          imagePullPolicy: Always
+          name: orders-app
+          ports:
+            - containerPort: 3000        
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/app
+              name: app-claim0
+      imagePullSecrets:
+        - name: ocirsecret
+      restartPolicy: Always
+      volumes:
+        - name: app-claim0
+          persistentVolumeClaim:
+            claimName: app-claim0
+---
+
+# Manifest for orders service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.service: app
+  name: orders-app-svc
+  namespace: apps
+spec:
+  type: NodePort
+  ports:
+    - name: "3005"
+      port: 3005
+      targetPort: 3000
+  selector:
+    app.service: app
+
+---
+# Manifest for Mongo deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.service: mongo-orders
+  name: mongo-orders
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.service: mongo-orders
+  template:
+    metadata:
+      labels:
+        app.network/svc-network: "true"
+        app.service: mongo-orders
+    spec:
+      containers:
+        - env:
+            - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+              value: root
+            - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+              value: root
+          image: mongo:4.4.14
+          name: mongo-node
+          ports:
+            - containerPort: 8081
+          resources: {}
+      restartPolicy: Always
+---
+# Manifest for Mongo service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.service: mongo-orders
+  name: mongo-orders-svc
+  namespace: apps
+spec:
+  ports:
+    - name: "8081"
+      port: 8081
+      targetPort: 27017
+  selector:
+    app.service: mongo-orders
+
+---
+# Manifest for service network
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: svc-network
+  namespace: apps
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.network/svc-network: "true"
+  podSelector:
+    matchLabels:
+      app.network/svc-network: "true"
+---
+# Manifest for persistent volume claim
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.service: app-claim0
+  name: app-claim0
+  namespace: apps
+spec:
+  storageClassName: "oci-bv"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

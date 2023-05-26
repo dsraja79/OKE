@@ -1,0 +1,20 @@
+[
+    { "product": "PRD-01", "quantity": "10" },
+    { "product": "PRD-02", "quantity": "5" },
+    { "product": "PRD-03", "quantity": "8" },
+    { "product": "PRD-04", "quantity": "10" },
+    { "product": "PRD-05", "quantity": "15" },
+    { "product": "PRD-06", "quantity": "82" },
+    { "product": "PRD-07", "quantity": "11" },
+    { "product": "PRD-08", "quantity": "52" },
+    { "product": "PRD-09", "quantity": "80" },
+    { "product": "PRD-10", "quantity": "100" },
+    { "product": "PRD-11", "quantity": "55" },
+    { "product": "PRD-12", "quantity": "48" },
+    { "product": "PRDV2-01", "quantity": "30"},
+    { "product": "PRDV2-02", "quantity": "50"},
+    { "product": "PRDV2-03", "quantity": "10"},
+    { "product": "PRDV2-04", "quantity": "85"},
+    { "product": "PRDV2-05", "quantity": "65"}
+   
+]
